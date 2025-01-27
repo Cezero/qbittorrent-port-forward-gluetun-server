@@ -1,20 +1,20 @@
 #!/bin/sh
 set -e
 
-qbt_username="${QBT_USERNAME:-admin}"
-qbt_password="${QBT_PASSWORD:-adminadmin}"
-qbt_addr="${QBT_ADDR:-http://localhost:8080}" # ex. http://10.0.1.48:8080
-gtn_addr="${GTN_ADDR:-http://localhost:8000}" # ex. http://10.0.1.48:8000
+gtn_host="${GTN_HOST:-gluetun}"
+gtn_port="${GTN_PORT:-8000}"
+qbt_port="${QBT_ADDR:-8080}"
 
-port_number=$(curl --fail --silent --show-error  $GTN_ADDR/v1/openvpn/portforwarded | jq '.port')
+gtn_addr="http://${gtn_host}:${gtn_port}"
+qbt_addr="http://${gtn_host}:${qbt_port}"
+
+port_number=$(curl --fail --silent --show-error  $gtn_addr/v1/openvpn/portforwarded | jq '.port')
 if [ ! "$port_number" ] || [ "$port_number" = "0" ]; then
     echo "Could not get current forwarded port from gluetun, exiting..."
     exit 1
 fi
 
-curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt --header "Referer: $qbt_addr" --data "username=$qbt_username" --data "password=$qbt_password" $qbt_addr/api/v2/auth/login 1> /dev/null
-
-listen_port=$(curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt $qbt_addr/api/v2/app/preferences | jq '.listen_port')
+listen_port=$(curl --fail --silent --show-error $qbt_addr/api/v2/app/preferences | jq '.listen_port')
 
 if [ ! "$listen_port" ]; then
     echo "Could not get current listen port, exiting..."
@@ -28,6 +28,6 @@ fi
 
 echo "Updating port to $port_number"
 
-curl --fail --silent --show-error --cookie-jar /tmp/cookies.txt --cookie /tmp/cookies.txt --data-urlencode "json={\"listen_port\": $port_number}"  $qbt_addr/api/v2/app/setPreferences
+curl --fail --silent --show-error --data-urlencode "json={\"listen_port\": $port_number}"  $qbt_addr/api/v2/app/setPreferences
 
 echo "Successfully updated port"

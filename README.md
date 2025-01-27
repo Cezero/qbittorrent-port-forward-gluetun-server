@@ -2,16 +2,17 @@
 
 A shell script and Docker container for automatically setting qBittorrent's listening port from Gluetun's control server.
 
+This version assumes qbittorrent has been configured to whitelist the Docker local network, and that qbittorrent is bound to gluetun.
+
 ## Config
 
 ### Environment Variables
 
-| Variable     | Example                     | Default                      | Description                                                     |
-|--------------|-----------------------------|------------------------------|-----------------------------------------------------------------|
-| QBT_USERNAME | `username`                  | `admin`                      | qBittorrent username                                            |
-| QBT_PASSWORD | `password`                  | `adminadmin`                 | qBittorrent password                                            |
-| QBT_ADDR     | `http://192.168.1.100:8080` | `http://localhost:8080`      | HTTP URL for the qBittorrent web UI, with port                  |
-| GTN_ADDR     | `http://192.168.1.100:8000` | `http://localhost:8000`      | HTTP URL for the gluetun control server, with port              |
+| Variable  | Example    | Default    | Description                          |
+|-----------|------------|------------|--------------------------------------|
+| QBT_PORT  | `9090`     | `8080`     | Port for the qBittorrent web UI      |
+| GTN_PORT  | `9000`     | `8000`     | Port for the gluetun control server  |
+| GTN_HOST  | `vpnserv`  | `gluetun`  | Hostname for gluetun                 |
 
 ## Example
 
@@ -21,14 +22,13 @@ The following is an example docker-compose:
 
 ```yaml
   qbittorrent-port-forward-gluetun-server:
-    image: mjmeli/qbittorrent-port-forward-gluetun-server
+    image: cezero/qbittorrent-port-forward-gluetun-server
     container_name: qbittorrent-port-forward-gluetun-server
     restart: unless-stopped
     environment:
-      - QBT_USERNAME=username
-      - QBT_PASSWORD=password
-      - QBT_ADDR=http://192.168.1.100:8080
-      - GTN_ADDR=http://192.168.1.100:8000
+      - QBT_PORT=9090
+      - GTN_PORT=9000
+      - GTN_HOST=vpnserv
 ```
 
 ## Development
@@ -39,4 +39,4 @@ The following is an example docker-compose:
 
 ### Run Container
 
-`docker run --rm -it -e QBT_USERNAME=admin -e QBT_PASSWORD=adminadmin -e QBT_ADDR=http://192.168.1.100:8080 -e GTN_ADDR=http://192.168.1.100:8000 qbittorrent-port-forward-gluetun-server:latest`
+`docker run --rm -it -e QBT_PORT=9090 -e GTN_PORT=9000 -e GTN_HOST=vpnserv qbittorrent-port-forward-gluetun-server:latest`
