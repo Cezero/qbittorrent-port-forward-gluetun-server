@@ -2,7 +2,7 @@
 
 A shell script and Docker container for automatically setting qBittorrent's listening port from Gluetun's control server.
 
-This version assumes qbittorrent has been configured to whitelist the Docker local network, and that qbittorrent is bound to gluetun.
+This version assumes that both it and qBittorrent are running as a sidecar to Gluetun
 
 ## Config
 
@@ -12,7 +12,6 @@ This version assumes qbittorrent has been configured to whitelist the Docker loc
 |-----------|------------|------------|--------------------------------------|
 | QBT_PORT  | `9090`     | `8080`     | Port for the qBittorrent web UI      |
 | GTN_PORT  | `9000`     | `8000`     | Port for the gluetun control server  |
-| GTN_HOST  | `vpnserv`  | `gluetun`  | Hostname for gluetun                 |
 
 ## Example
 
@@ -28,7 +27,6 @@ The following is an example docker-compose:
     environment:
       - QBT_PORT=9090
       - GTN_PORT=9000
-      - GTN_HOST=vpnserv
 ```
 
 ## Development
@@ -39,4 +37,4 @@ The following is an example docker-compose:
 
 ### Run Container
 
-`docker run --rm -it -e QBT_PORT=9090 -e GTN_PORT=9000 -e GTN_HOST=vpnserv qbittorrent-port-forward-gluetun-server:latest`
+`docker run --rm -it -e QBT_PORT=9090 -e GTN_PORT=9000 qbittorrent-port-forward-gluetun-server:latest`
